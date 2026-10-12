@@ -1,0 +1,14 @@
+{
+    "target_overrides": {
+        "*": {
+            "target.printf_lib": "std",
+            "platform.stdio-convert-newlines": true,
+            "platform.stdio-baud-rate": 921600,
+            "platform.stdio-buffered-serial": true,
+            "rtos.main-thread-stack-size": 4096,
+            "platform.minimal-printf-enable-64-bit": true,
+            "platform.minimal-printf-set-floating-point-max-decimals": 6,
+            "target.cxx_flags" : ["-std=c++17"]
+        }
+    }
+}
