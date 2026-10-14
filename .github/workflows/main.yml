@@ -1,4 +1,4 @@
-name: Build example application
+name: Build application
 
 on:
   pull_request:
@@ -6,50 +6,24 @@ on:
 
 jobs: 
   build-cli-v1:
+    runs-on: ubuntu-latest
     container:
       image: ghcr.io/armmbed/mbed-os-env:master-latest
 
-    runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        target: [K64F, DISCO_L475VG_IOT01A, NRF52840_DK]
-        profile: [release, debug, develop]
-        
+        target: [NUCLEO_F446RE]
+        profile: [release, develop]
 
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v2
-          
-      -
-        name: build-example
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch Mbed OS and libraries
         run: |
-          set -e
-          mbed deploy
-          mbed compile -t GCC_ARM -m ${{ matrix.target }} --profile ${{ matrix.profile }}
-          
+          rm -rf mbed-os
+          git clone https://github.com/ARMmbed/mbed-os.git --depth 1 -b mbed-os-6.17.0
 
-  build-cli-v2:
-    container:
-      image: ghcr.io/armmbed/mbed-os-env:master-latest
-
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        target: [K64F, DISCO_L475VG_IOT01A, NRF52840_DK]
-        profile: [release, debug, develop]
-        
-
-    steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v2
-          
-      -
-        name: build-example-application
+      - name: Build application
         run: |
-          set -e
-          mbed-tools deploy
-          mbed-tools compile -t GCC_ARM -m ${{ matrix.target }} --profile ${{ matrix.profile }}
+          python3 mbed-os/tools/make.py -t GCC_ARM -m ${{ matrix.target }} --profile ${{ matrix.profile }} --source . --build ./BUILD/${{ matrix.target }}/GCC_ARM-${{ matrix.profile }}
